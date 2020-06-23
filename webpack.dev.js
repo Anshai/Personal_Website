@@ -5,10 +5,6 @@ module.exports = {
     mode: 'development',
     entry: './src/index.js',
 
-    // module: {
-
-    // },
-
     plugins: [new HtmlWebpackPlugin({
         template: './src/index.html'
     })],
