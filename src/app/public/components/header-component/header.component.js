@@ -8,6 +8,7 @@ export class HeaderComponent extends Component {
 
         this.shadowRoot.innerHTML = `
         <style>
+
             .main-header{
                 width: 100vw;
                 height: 3.5rem;
@@ -16,6 +17,7 @@ export class HeaderComponent extends Component {
                 left: 0;
                 display: flex;
                 align-items: center;
+                font-family: 'raleway-ebi';
             }
             .main-header > .black-line{
                 width: 100%;
@@ -34,6 +36,7 @@ export class HeaderComponent extends Component {
                 margin: 0;
                 padding: 0.1rem 0.2rem;
                 cursor: default;
+                font-size: 1.2rem;
             }
         </style>
 

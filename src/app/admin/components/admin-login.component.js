@@ -8,6 +8,7 @@ export class AdminLoginComponent extends Component {
 
         this.shadowRoot.innerHTML = `
         <style>
+
             .login-card__container{
                 width: 13rem;
                 height: 11rem;
@@ -17,7 +18,9 @@ export class AdminLoginComponent extends Component {
                 top: 50%;
                 left: 50%;
                 transform: translate(-50%, -50%);
-                box-shadow: 4px -2px 15px 0px rgba(0,0,0,0.11);
+                // box-shadow: 2px -2px 5px -1px rgba(0,0,0,0.11);
+                font-family: 'raleway-bold';
+                border: 1px solid rgba(150, 150, 150, 0.2);
             }
             .login-card__container > .login-form__container{
                 width: 100%;
@@ -39,11 +42,17 @@ export class AdminLoginComponent extends Component {
                 align-items: center;
                 justify-content: center;
             }
+
+            .form-group label{
+                font-size: 0.8rem;
+                color: rgba(100, 100, 100, 1);
+            }
+
             .form-group input {
                 width: 70%;
                 border: none;
                 border-radius: 2px;
-                border-bottom: 1px solid #ccc;
+                border-bottom: 1px solid rgba(100, 100, 100, 0.2);
                 transition: width 300ms;
                 outline: none;
             }
@@ -63,10 +72,11 @@ export class AdminLoginComponent extends Component {
                 padding: 0.2rem 0.8rem;
                 border: none;
                 border-radius: 2px;
-                background-color: rgba(20, 20, 20, 0.3);
+                // background-color: rgba(20, 20, 20, 0.3);
                 color: white;
                 outline: none;
                 transition: background-color 500ms;
+                font-size: 0.8rem;
             }
             .login-actions__container > .login-btn:hover{
                 background-color: rgba(20, 20, 20, 0.5);
@@ -92,7 +102,34 @@ export class AdminLoginComponent extends Component {
             <button class="login-btn">LOGIN</button>
         </div>
     </div>`;
-
-
     }
+
+    connectedCallback(){
+        this.loginBtn = this.shadowRoot.querySelector('.login-btn');
+        this.usernameControl = this.shadowRoot.querySelector('.username-input');
+        this.passwordControl = this.shadowRoot.querySelector('.password-input');
+        this.loginData = {
+            username: '',
+            password:  ''
+        }
+        this.loginEvent = this.handleLogin.bind(this);
+        this.loginBtn.addEventListener('click', this.loginEvent);
+    }
+
+    disconnectedCallback(){
+        this.loginBtn.removeEventListener('click', this.loginEvent);
+    }
+
+    handleLogin(){
+        let userInput = this.getLoginData();
+        console.log(userInput);
+    }
+
+    getLoginData(){
+        this.loginData.username = this.usernameControl.value;
+        this.loginData.password = this.passwordControl.value;
+        return this.loginData;
+    }
+
+
 }
