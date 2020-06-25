@@ -5,6 +5,10 @@ module.exports = {
     mode: 'development',
     entry: './src/index.js',
 
+    output: {
+        publicPath: '/',
+    }, 
+
     module: {
         rules: [
             {
