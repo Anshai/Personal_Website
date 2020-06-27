@@ -4,6 +4,8 @@ export class HeaderComponent extends Component {
     constructor() {
         super();
 
+        this.router;
+
         this.attachShadow({mode: 'open'});
 
         this.shadowRoot.innerHTML = `
@@ -38,6 +40,17 @@ export class HeaderComponent extends Component {
                 cursor: default;
                 font-size: 1.2rem;
             }
+            .navbar{
+                font-size: 0.5rem;
+                position: absolute;
+                display: flex;
+                top: 0;
+                left: 100%;
+                transform: translateX(-150%);
+            }
+            .navbar > a{
+                margin: 0.5rem;
+            }
         </style>
 
         <header class="main-header">
@@ -45,7 +58,23 @@ export class HeaderComponent extends Component {
             <div class="logo-holder">
                 <p class="logo">KE</p>
             </div>
+            <div class="navbar">
+                <a href="/admin" class="navlink">Admin</a>
+                <a href="/public" class="navlink">Public</a>
+            </div>
         </header>`;
+    }
+
+    connectedCallback(){
+        const navbar = this.shadowRoot.querySelector('.navbar');
+        navbar.addEventListener('click', (event) => {
+            event.preventDefault();
+            if(event.target.closest('.navlink')){
+                let element = event.target.closest('.navlink');
+                let path = element.getAttribute('href');
+                this.router.navigate(path);
+            }
+        });
     }
 
 }
