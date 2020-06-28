@@ -4,14 +4,13 @@ export class Router {
         this.routes = routes;
         this.routerHelper = new RouterHelper();
         this.routerOutlet = routerOutlet;
-        this.importedComponents = [];
+        this.importedComponents = new ImportedComponents();
     }
 
     handleLoad(){
         const currentURL = this.routerHelper.getCurrentPath();
         let nextRoute = this.searchRoute(currentURL);
-        let isImported = this.checkIfAlreadyImported(nextRoute.component);
-        if(isImported){
+        if(this.importedComponents.isImported(nextRoute.component)){
             console.log('Already imported logic mising');
         } else {
             let classPath = this.getClassPath(nextRoute.component);
@@ -19,17 +18,18 @@ export class Router {
                 let className = this.getClassName(nextRoute.component);
                 customElements.define(nextRoute.component, module[className]);
                 this.createComponent(nextRoute.component, this.renderComponent);
+                this.importedComponents.addImported(nextRoute.component, module[className]);
+                this.importedComponents.logImported();
             });
-            this.importedComponents.push(nextRoute.component);
         }
     }
 
     navigate(path){
         let nextRoute = this.searchRoute(path);
-        let isImported = this.checkIfAlreadyImported(nextRoute.component);
-        if(isImported){
+        if(this.importedComponents.isImported(nextRoute.component)){
             const newComp = document.createElement(nextRoute.component);
             this.replaceComponent(newComp);
+            this.importedComponents.logImported();
         } else {
             let classPath = this.getClassPath(nextRoute.component);
             import('../../' + classPath).then(module => {
@@ -37,8 +37,9 @@ export class Router {
                 customElements.define(nextRoute.component, module[className]);
                 const newComp = document.createElement(nextRoute.component);
                 this.replaceComponent(newComp);
+                this.importedComponents.addImported(nextRoute.component, module[className]);
+                this.importedComponents.logImported();
             });
-            this.importedComponents.push(nextRoute.component);
         }
     }
 
@@ -97,10 +98,32 @@ export class Router {
         console.log(this.routerOutlet.firstElementChild);
         this.routerOutlet.firstElementChild.replaceWith(newComp);
     }
+
+    setUrl(url){
+        history.pushState(url);
+    }
     
 }
 
-export class RouterHelper {
+class ImportedComponents {
+    constructor(){
+        this.importedComponents = new Map();
+    }
+
+    logImported(){
+        console.log(this.importedComponents);
+    }
+
+    isImported(selector){
+        return this.importedComponents.has(selector);
+    }
+
+    addImported(componentSelector, componentClass){
+        this.importedComponents.set(componentSelector, componentClass);
+    }
+}
+
+class RouterHelper {
     getCurrentPath(){
         return document.location.pathname;
     }
