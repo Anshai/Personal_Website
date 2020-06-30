@@ -1,4 +1,5 @@
 export class Router {
+
     constructor(declarations, routes, routerOutlet){
         this.declarations = declarations;
         this.routes = routes;
@@ -10,35 +11,30 @@ export class Router {
     handleLoad(){
         const currentURL = this.routerHelper.getCurrentPath();
         let nextRoute = this.searchRoute(currentURL);
-        if(this.importedComponents.isImported(nextRoute.component)){
+        if(this.importedComponents.isImported(nextRoute.route.component)){
             console.log('Already imported logic mising');
         } else {
-            let classPath = this.getClassPath(nextRoute.component);
-            import('../../' + classPath).then(module => {
-                let className = this.getClassName(nextRoute.component);
-                customElements.define(nextRoute.component, module[className]);
-                this.createComponent(nextRoute.component, this.renderComponent);
-                this.importedComponents.addImported(nextRoute.component, module[className]);
-                this.importedComponents.logImported();
+            import('../../' + nextRoute.classPath).then(module => {
+                customElements.define(nextRoute.route.component, module[nextRoute.className]);
+                this.renderComponent(this.createComponent(nextRoute.route.component));
+                this.importedComponents.addImported(nextRoute.route.component, module[nextRoute.className]);
             });
         }
     }
 
     navigate(path){
         let nextRoute = this.searchRoute(path);
-        if(this.importedComponents.isImported(nextRoute.component)){
-            const newComp = document.createElement(nextRoute.component);
+        if(this.importedComponents.isImported(nextRoute.route.component)){
+            const newComp = document.createElement(nextRoute.route.component);
             this.replaceComponent(newComp);
-            this.importedComponents.logImported();
+            this.setUrl(path);
         } else {
-            let classPath = this.getClassPath(nextRoute.component);
-            import('../../' + classPath).then(module => {
-                let className = this.getClassName(nextRoute.component);
-                customElements.define(nextRoute.component, module[className]);
-                const newComp = document.createElement(nextRoute.component);
+            import('../../' + nextRoute.classPath).then(module => {
+                customElements.define(nextRoute.route.component, module[nextRoute.className]);
+                const newComp = document.createElement(nextRoute.route.component);
                 this.replaceComponent(newComp);
-                this.importedComponents.addImported(nextRoute.component, module[className]);
-                this.importedComponents.logImported();
+                this.setUrl(path);
+                this.importedComponents.addImported(nextRoute.route.component, module[nextRoute.className]);
             });
         }
     }
@@ -47,7 +43,13 @@ export class Router {
         let i = 0;
         while(i < this.routes.length){
             if(this.routes[i].path.test(url)){
-                return this.routes[i];
+                let cName = this.getClassName(this.routes[i].component);
+                let cPath = this.getClassPath(this.routes[i].component);
+                return {
+                    route: this.routes[i],
+                    className: cName,
+                    classPath: cPath
+                }
             }
             i++;
         }
@@ -84,9 +86,7 @@ export class Router {
 
 
     createComponent(tag){
-        const newComp = document.createElement(tag);
-        // console.log(newComp);
-        this.renderComponent(newComp);
+        return document.createElement(tag);
     }
 
 
@@ -95,12 +95,11 @@ export class Router {
     }
 
     replaceComponent(newComp){
-        console.log(this.routerOutlet.firstElementChild);
         this.routerOutlet.firstElementChild.replaceWith(newComp);
     }
 
     setUrl(url){
-        history.pushState(url);
+        history.pushState({}, '', url);
     }
     
 }

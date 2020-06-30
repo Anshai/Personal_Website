@@ -32,7 +32,7 @@ class App {
 
         this.declarations = [
             {selector: 'app-publichome', className: 'PublicHomeComponent', classPath: 'public/components/home-component/home.component'},
-            {selector: 'app-admin', className: 'AdminLoginComponent',  classPath: 'admin/components/admin-login.component'},
+            {selector: 'app-admin', className: 'AdminLoginComponent',  classPath: 'admin/components/admin-login/admin-login.component'},
             {selector: 'app-notfound', className: 'NotFoundComponent', classPath: 'shared/components/not-found-component/notfound.component'}
         ];
 
