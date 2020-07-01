@@ -1,8 +1,79 @@
 import { Component } from "../../../component";
 
-export class AppPopUp extends Component {
-    constructor(){
+export class PopUpComponent extends Component {
+    constructor(config){
         super();
-        this.innerHTML = '<p>pop-up shit</p>';
+
+        this.attachShadow({mode: 'open'});
+        
+        this.shadowRoot.innerHTML = `
+        <style>
+        @keyframes pop-up {
+            0%{
+                opacity: 0;
+                transform: translate(-50%, -3rem);
+            } 20% {
+                opacity: 100;
+                transform: translate(-50%, 0);
+            } 80% {
+                opacity: 100;
+                transform: translate(-50%, 0);
+            } 100% {
+                opacity: 0;
+            }
+        }
+
+        .pop-up__contaienr{
+            position: absolute;
+            transform: translate(-50%, 0);
+            top: 10%;
+            left: 50%;
+            margin: 0 auto;
+            opacity: 0;
+            /* border: 1px solid #ccc; */
+            padding: 0.2rem 1.7rem;
+            border-radius: 2px;
+            font-family: 'raleway-bold';
+            font-size: 0.8rem;
+        }
+
+        .pop-animation{
+            animation-name: pop-up;
+            animation-duration: 2.5s;
+            animation-fill-mode: forwards;
+        }
+
+        .warning{
+            background: #e7305b;
+            color: white;
+        }
+
+        .nice{
+            background: #383e56;
+            color: white;
+        }
+        </style>
+
+        <div class="pop-up__contaienr warning pop-animation">
+            <span class="message">Wrong Input</span>
+        </div>
+        `;
+
+        this.config = config;
     }
+
+
+    connectedCallback(){
+        this.popUpComponent = this.shadowRoot.querySelector('pop-up__container');
+    }
+
+    // popUp(){
+    //     this.popUpComponent.classList.toggle('pop-animation');
+    //     setTimeout(() => {
+    //         this.popUpComponent.classList.toggle('pop-animation');
+    //     }, 2500);
+    // }
+
+
+
 }

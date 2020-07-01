@@ -163,6 +163,7 @@ export class AdminLoginComponent extends Component {
         if(this.usernameValidator(userInput.username) && this.passwordValidator(userInput.password)){
             console.log('valid input');
             this.changeBorderColor(true);
+            
         } else {
             console.log('invalid input');
             this.changeBorderColor(false);
@@ -196,7 +197,7 @@ export class AdminLoginComponent extends Component {
                 this.loginCard.classList.toggle('invalid');
             }, 1500);
         } else {
-            console.log('UX STUFF for valid input');
+            console.log('UX STUFF for valid user input');
             this.loginCard.classList.toggle('valid');
             setTimeout( () => {
                 this.loginCard.classList.toggle('valid');
