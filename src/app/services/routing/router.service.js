@@ -1,4 +1,4 @@
-export class Router {
+export class Router{
 
     constructor(declarations, routes, routerOutlet, lazyService){
         this.declarations = declarations;
@@ -11,23 +11,25 @@ export class Router {
     handleLoad(){
         const currentURL = this.routerHelper.getCurrentPath();
         let nextRoute = this.searchRoute(currentURL);
-        if(this.lazyService.isImported(nextRoute.route.component)){
+        if(this.lazyService.isImported(nextRoute.selector)){
             console.log('Already imported logic mising');
         } else {
             this.lazyService.importComponent(nextRoute);
-            this.renderComponent(this.createComponent(nextRoute.route.component)); 
+            this.renderRoute(this.createComponent(nextRoute.selector)); 
         }
     }
 
     navigate(path){
         let nextRoute = this.searchRoute(path);
-        if(this.lazyService.isImported(nextRoute.route.component)){
-            const newComp = document.createElement(nextRoute.route.component);
-            this.replaceComponent(newComp);
+        if(this.lazyService.isImported(nextRoute.selector)){
+            const newComp = this.createComponent(nextRoute.selector);
+            console.log(newComp);
+            this.replaceRoute(newComp);
             this.setUrl(path);
         } else {
             this.lazyService.importComponent(nextRoute);
-            this.replaceComponent(document.createElement(nextRoute.route.component));
+            this.replaceRoute(this.createComponent(nextRoute.selector));
+            this.setUrl(path);
         }
     }
 
@@ -38,7 +40,7 @@ export class Router {
                 let cName = this.getClassName(this.routes[i].component);
                 let cPath = this.getClassPath(this.routes[i].component);
                 return {
-                    route: this.routes[i],
+                    selector: this.routes[i].component,
                     className: cName,
                     classPath: cPath
                 }
@@ -46,19 +48,6 @@ export class Router {
             i++;
         }
     }
-
-    // checkIfAlreadyImported(searched){
-    //     let imported = false;
-    //     this.importedComponents.forEach( comp => {
-    //         console.log(comp);
-    //         if(comp === searched){
-    //             console.log('ay');
-    //             imported = true;
-    //         }
-    //     });
-    //     console.log(imported);
-    //     return imported;
-    // }
 
     getClassName(searched){
         for(let i = 0; i < this.declarations.length; i++){
@@ -78,15 +67,17 @@ export class Router {
 
 
     createComponent(tag){
-        return document.createElement(tag);
+        let comp = document.createElement(tag);
+        comp.router = this; 
+        return comp;
     }
 
 
-    renderComponent(c){
+    renderRoute(c){
         this.routerOutlet.appendChild(c);
     }
 
-    replaceComponent(newComp){
+    replaceRoute(newComp){
         this.routerOutlet.firstElementChild.replaceWith(newComp);
     }
 

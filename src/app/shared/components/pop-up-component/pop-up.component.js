@@ -1,7 +1,7 @@
 import { Component } from "../../../component";
 
 export class PopUpComponent extends Component {
-    constructor(config){
+    constructor(){
         super();
 
         this.attachShadow({mode: 'open'});
@@ -54,25 +54,33 @@ export class PopUpComponent extends Component {
         }
         </style>
 
-        <div class="pop-up__contaienr warning pop-animation">
+        <div class="pop-up__contaienr" id="pop-up">
             <span class="message">Wrong Input</span>
         </div>
         `;
-
-        this.config = config;
     }
 
 
     connectedCallback(){
-        this.popUpComponent = this.shadowRoot.querySelector('pop-up__container');
+        this.popUpComponent = this.shadowRoot.getElementById('pop-up');
+        this.preDefined = {
+            warning: 'warning',
+            green: 'nice',
+            setMessage: (message) => {
+                this.shadowRoot.querySelector('.message').innerText = message;
+            }
+        }
     }
-
-    // popUp(){
-    //     this.popUpComponent.classList.toggle('pop-animation');
-    //     setTimeout(() => {
-    //         this.popUpComponent.classList.toggle('pop-animation');
-    //     }, 2500);
-    // }
+    
+    popUp(config){
+        this.preDefined.setMessage(config.message);
+        this.popUpComponent.classList.toggle('pop-animation');
+        this.popUpComponent.classList.toggle(this.preDefined[config.style]);
+        setTimeout(() => {
+            this.popUpComponent.classList.toggle('pop-animation');
+            this.popUpComponent.classList.toggle(this.preDefined[config.style]);
+        }, 2500);
+    }
 
 
 

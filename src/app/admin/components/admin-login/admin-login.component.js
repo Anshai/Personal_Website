@@ -5,6 +5,7 @@ export class AdminLoginComponent extends Component {
         super();
 
         this.attachShadow({mode: 'open'});
+        this.popUpMessageComponent;
 
         this.shadowRoot.innerHTML = `
         <style>
@@ -160,14 +161,56 @@ export class AdminLoginComponent extends Component {
 
     handleLogin(){
         let userInput = this.getLoginData();
-        if(this.usernameValidator(userInput.username) && this.passwordValidator(userInput.password)){
-            console.log('valid input');
-            this.changeBorderColor(true);
-            
-        } else {
-            console.log('invalid input');
-            this.changeBorderColor(false);
 
+        if(this.router.lazyService.isImported('app-popup')){
+            this.popUpMessageComponent = document.querySelector('app-popup');
+            console.log('here ->');
+            this.popUpMessageComponent = document.createElement('app-popup');
+            this.shadowRoot.append(this.popUpMessageComponent);
+            console.log('imported');
+            if(this.usernameValidator(userInput.username) && this.passwordValidator(userInput.password)){
+                console.log('valid input');
+                this.changeBorderColor(true);
+                this.popUpMessageComponent.popUp({
+                    style: 'green',
+                    message: 'Valid Input',
+                });
+            } else {
+                console.log('invalid input');
+                this.changeBorderColor(false);
+                this.popUpMessageComponent.popUp({
+                    style: 'warning',
+                    message: 'Invalid Input',
+                });
+            }
+        } else {
+            this.router.lazyService.importAsync({
+                selector: 'app-popup',
+                classPath: 'shared/components/pop-up-component/pop-up.component',
+                className: 'PopUpComponent'
+            }).then(module => {
+                customElements.define('app-popup', module['PopUpComponent']);
+                this.popUpMessageComponent = document.createElement('app-popup');
+                this.shadowRoot.append(this.popUpMessageComponent);
+
+                if(this.usernameValidator(userInput.username) && this.passwordValidator(userInput.password)){
+                    console.log('valid input');
+                    this.changeBorderColor(true);
+                    this.popUpMessageComponent.popUp({
+                        style: 'green',
+                        message: 'Valid Input',
+                    });
+                } else {
+                    console.log('invalid input');
+                    this.changeBorderColor(false);
+                    this.popUpMessageComponent.popUp({
+                        style: 'warning',
+                        message: 'Invalid Input',
+                    });
+                }
+            });
+
+            this.router.lazyService.addImported('app-popup', module['PopUpComponent']);
         }
     }
 

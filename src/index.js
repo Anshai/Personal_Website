@@ -5,13 +5,11 @@ import { RouterOutlet } from './app/shared/components/router-outlet/app-router-o
 import * as RT from './app/services/routing/router.service';
 import LazyLoading from './app/services/routing/lazy-loading.service';
 
-import { PopUpComponent } from './app/shared/components/pop-up-component/pop-up.component';
-
 import './style.css';
 
 
 // DEVSHTI BOI
-customElements.define('app-popup', PopUpComponent);
+// customElements.define('app-popup', PopUpComponent);
 
 
 customElements.define('app-router-outlet', RouterOutlet);
@@ -20,15 +18,16 @@ customElements.define('app-header', HeaderComponent);
 class RequestHelper {
     constructor(){
         this.xhr = new XMLHttpRequest();
-        this.baseUrl = 'http://localhost:3000';
+        this.baseUrl = 'http://localhost:4200';
     }
 
     sendData(){
-        this.xhr.open("GET", this.baseUrl + '/');
+        this.xhr.open("POST", this.baseUrl + '/auth/log-in');
         this.xhr.send("request body shit content")
 
-        this.xhr.onload = () => {
+        this.xhr.onload = (res) => {
             console.log('oh boi');
+            console.log(res);
         }
     }
 }
@@ -69,6 +68,6 @@ class App {
 
 document.addEventListener("DOMContentLoaded", function() {
     App.init();
-    // const rh = new RequestHelper;
-    // rh.sendData();
+    const rh = new RequestHelper;
+    rh.sendData();
 });
