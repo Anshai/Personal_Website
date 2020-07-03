@@ -61,6 +61,7 @@ export class HeaderComponent extends Component {
             <div class="navbar">
                 <a href="/admin" class="navlink">Admin</a>
                 <a href="/public" class="navlink">Public</a>
+                <a href="/admin-register" class="navlink">AdminReg</a>
             </div>
         </header>`;
     }

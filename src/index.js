@@ -41,6 +41,7 @@ class App {
         this.declarations = [
             {selector: 'app-publichome', className: 'PublicHomeComponent', classPath: 'public/components/home-component/home.component'},
             {selector: 'app-admin', className: 'AdminLoginComponent',  classPath: 'admin/components/admin-login/admin-login.component'},
+            {selector: 'app-adminreg', className: 'AdminRegister',  classPath: 'admin/components/admin-register/admin-register.component'},
             {selector: 'app-notfound', className: 'NotFoundComponent', classPath: 'shared/components/not-found-component/notfound.component'},
             {selector: 'app-popup', className: 'PopUpComponent', classPath: 'shared/components/pop-up-component/pop-up.component'}
         ];
@@ -49,6 +50,7 @@ class App {
             {path: /^\/?$/i, component: 'app-publichome'},
             {path: /^\/?admin\/?$/i, component: 'app-admin'},
             {path: /^\/?admin\/login\/?/i, component: 'app-admin'},
+            {path: /^\/?admin-reg\/?/i, component: 'app-adminreg'},
             {path: /^\/?public\/?$/, component: 'app-publichome'},
             {path: /^\/?public\/home\/?$/, component: 'app-publichome'},
             {path: /.*/, component: 'app-notfound'},
