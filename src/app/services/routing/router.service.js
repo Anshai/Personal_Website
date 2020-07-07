@@ -8,28 +8,29 @@ export class Router{
         this.lazyService = lazyService;
     }
 
-    handleLoad(){
+    onPageLoad(){
         const currentURL = this.routerHelper.getCurrentPath();
-        let nextRoute = this.searchRoute(currentURL);
-        if(this.lazyService.isImported(nextRoute.selector)){
+        let routeData = this.searchRoute(currentURL);
+        if(this.lazyService.isImported(routeData.selector)){
             console.log('Already imported logic mising');
         } else {
-            this.lazyService.importComponent(nextRoute);
-            this.renderRoute(this.createComponent(nextRoute.selector)); 
+            this.lazyService.importComponent(routeData).then( selector => {
+                this.renderRoute(this.createComponent(selector)); 
+            });
+            
         }
     }
 
     navigate(path){
-        let nextRoute = this.searchRoute(path);
-        if(this.lazyService.isImported(nextRoute.selector)){
-            const newComp = this.createComponent(nextRoute.selector);
-            console.log(newComp);
-            this.replaceRoute(newComp);
+        let routeData = this.searchRoute(path);
+        if(this.lazyService.isImported(routeData.selector)){
+            this.renderRoute(this.createComponent(routeData.selector));
             this.setUrl(path);
         } else {
-            this.lazyService.importComponent(nextRoute);
-            this.replaceRoute(this.createComponent(nextRoute.selector));
-            this.setUrl(path);
+            this.lazyService.importComponent(routeData).then( selector => {
+                this.renderRoute(this.createComponent(selector));
+                this.setUrl(path);
+            });
         }
     }
 
@@ -74,11 +75,14 @@ export class Router{
 
 
     renderRoute(c){
-        this.routerOutlet.appendChild(c);
-    }
-
-    replaceRoute(newComp){
-        this.routerOutlet.firstElementChild.replaceWith(newComp);
+        let isAnyRouteLoaded = !!this.routerOutlet.firstElementChild;
+        if(isAnyRouteLoaded){
+            console.log('Some route is loaded, gonna replace it...');
+            this.routerOutlet.firstElementChild.replaceWith(c);
+        } else {
+            console.log('No route loaded...');
+            this.routerOutlet.appendChild(c);
+        }
     }
 
     setUrl(url){

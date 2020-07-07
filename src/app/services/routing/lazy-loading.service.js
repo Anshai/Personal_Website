@@ -3,10 +3,11 @@ export default class LazyLoading {
         this.importedComponents = new Map();
     }
 
-    importComponent(nextRoute){
-        import('../../' + nextRoute.classPath).then(module => {
-            customElements.define(nextRoute.selector, module[nextRoute.className]);
-            this.addImported(nextRoute.selector, module[nextRoute.className]);
+    importComponent(routeData){
+        return import('../../' + routeData.classPath).then(module => {
+            customElements.define(routeData.selector, module[routeData.className]);
+            this.addImported(routeData.selector, module[routeData.className]);
+            return routeData.selector;
         });
     }
 

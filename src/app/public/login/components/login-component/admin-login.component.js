@@ -1,4 +1,5 @@
-import { Component } from '../../../component';
+import { Component } from '../../../../component';
+import { LoginService } from '../../../../admin/services/login-service/login.service';
 
 export class AdminLoginComponent extends Component {
     constructor(){
@@ -6,6 +7,7 @@ export class AdminLoginComponent extends Component {
 
         this.attachShadow({mode: 'open'});
         this.popUpMessageComponent;
+        this.loginService = new LoginService();
 
         this.shadowRoot.innerHTML = `
         <style>
@@ -151,7 +153,7 @@ export class AdminLoginComponent extends Component {
             username: '',
             password:  ''
         }
-        this.loginEvent = this.handleLogin.bind(this);
+        this.loginEvent = this.onLogin.bind(this);
         this.loginBtn.addEventListener('click', this.loginEvent);
     }
 
@@ -159,15 +161,32 @@ export class AdminLoginComponent extends Component {
         this.loginBtn.removeEventListener('click', this.loginEvent);
     }
 
-    handleLogin(){
-        let userInput = this.getLoginData();
-
+    fetchPopUpComponent(){
         if(this.router.lazyService.isImported('app-popup')){
-            this.popUpMessageComponent = document.querySelector('app-popup');
-            console.log('here ->');
+            console.log('popup-component imported');
             this.popUpMessageComponent = document.createElement('app-popup');
             this.shadowRoot.append(this.popUpMessageComponent);
-            console.log('imported');
+            return Promise.resolve(true);
+        } else {
+            return this.router.lazyService.importAsync({
+                selector: 'app-popup',
+                classPath: 'shared/components/pop-up-component/pop-up.component',
+                className: 'PopUpComponent'
+            }).then(module => {
+                customElements.define('app-popup', module['PopUpComponent']);
+                this.popUpMessageComponent = document.createElement('app-popup');
+                this.shadowRoot.append(this.popUpMessageComponent);
+                this.router.lazyService.addImported('app-popup', module['PopUpComponent']);
+                return true;
+            });
+        }
+
+    }
+
+    onLogin(){
+        let userInput = this.getLoginData();
+    
+        this.fetchPopUpComponent().then( (v) => {
             if(this.usernameValidator(userInput.username) && this.passwordValidator(userInput.password)){
                 console.log('valid input');
                 this.changeBorderColor(true);
@@ -175,6 +194,9 @@ export class AdminLoginComponent extends Component {
                     style: 'green',
                     message: 'Valid Input',
                 });
+                this.loginService.logIn('http://localhost:4200/auth/log-in', userInput).then(res => {
+                    console.log(res);
+                })
             } else {
                 console.log('invalid input');
                 this.changeBorderColor(false);
@@ -183,35 +205,8 @@ export class AdminLoginComponent extends Component {
                     message: 'Invalid Input',
                 });
             }
-        } else {
-            this.router.lazyService.importAsync({
-                selector: 'app-popup',
-                classPath: 'shared/components/pop-up-component/pop-up.component',
-                className: 'PopUpComponent'
-            }).then(module => {
-                customElements.define('app-popup', module['PopUpComponent']);
-                this.popUpMessageComponent = document.createElement('app-popup');
-                this.shadowRoot.append(this.popUpMessageComponent);
+        });
 
-                if(this.usernameValidator(userInput.username) && this.passwordValidator(userInput.password)){
-                    console.log('valid input');
-                    this.changeBorderColor(true);
-                    this.popUpMessageComponent.popUp({
-                        style: 'green',
-                        message: 'Valid Input',
-                    });
-                } else {
-                    console.log('invalid input');
-                    this.changeBorderColor(false);
-                    this.popUpMessageComponent.popUp({
-                        style: 'warning',
-                        message: 'Invalid Input',
-                    });
-                }
-            });
-
-            this.router.lazyService.addImported('app-popup', module['PopUpComponent']);
-        }
     }
 
     getLoginData(){
